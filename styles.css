@@ -13,7 +13,7 @@ html {
     width: 200vw;
     height: 200vh;
 
-    background-color: rgb(27, 43, 34);
+    background-color: rgb(12, 29, 21);
     background-image: radial-gradient(
         rgba(255, 255, 255, 0.4) 9%,
         transparent 9%
@@ -31,37 +31,54 @@ html {
     padding: 0 1rem;
     color: white;
     font-family: 'Sono', sans-serif;
-    font-size: 5rem;
+    font-size: 5.2rem;
     font-weight: 300;
     letter-spacing: 1px;
-    border: 2px solid pink;
+    border: 3px solid pink;
     border-radius: 0.6rem;
 }
 
 .store-item {
+    --pseudo-border-color: pink; 
     position: absolute;
-    width: 5rem;
-    height: 5rem;
+    width: 6rem;
+    height: 6rem;
     background: pink;
-    transition: translate 150ms linear, width 150ms linear, height 150ms linear, border-radius 300ms ease-in;
+    transition: rotate 200ms ease-out, translate 200ms ease-out, width 200ms ease-out, height 200ms ease-out, border-radius 400ms linear;
     cursor: pointer;
     background-image: url("https://unsplash.it/120/220");
     background-size: cover;
-    border: 4px solid white;
-    box-shadow: 0 0 24px 4px rgba(255, 255, 255, 0.4);
+    border: 4px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 8px 0 rgba(255, 255, 255, 0.9);
     transform-origin: center;
+    translate: -50% -50%;
     animation: pulse 3000ms linear infinite;
 }
 
-.store-item[data-shape="circle"]::before {
+.store-item[data-shape="rectangle"] {
+    height: 7rem;
+    border-color:rgba(255, 255, 255, 0.9);
+    border-radius: 0.4rem;
+}
+
+.store-item[data-shape="diamond"] {
+    --tilt: 1;
+    rotate: calc(45deg * var(--tilt));
+}
+
+.store-item[data-shape="diamond"]:hover {
+    rotate: 0deg;
+}
+
+/* .store-item[data-shape="circle"]::before {
     content: "";
     position: absolute;
-    inset: -12px;
+    inset: -8px;
     border-radius: inherit;
-    border: 3px solid pink;
-    clip-path: polygon(0% 70%, 100% 70%, 100% 100%, 0% 100%);
-    animation: border-rotation 1200ms infinite ease-in-out;
-}
+    border: 3px solid var(--pseudo-border-color);
+    clip-path: polygon(0% 25%, 100% 25%, 100% 75%, 0% 75%);
+    animation: border-rotation 2400ms infinite ease;
+} */
 
 .store-item[data-shape="circle"] {
     border-radius: 50%;
@@ -70,7 +87,6 @@ html {
 .store-item:hover {
     width: 12rem;
     height: 22rem;
-    translate: -4.5rem -7.75rem;
     border: 4px solid white;
     border-radius: 4px;
     animation: none;

@@ -16,8 +16,17 @@ function randomPick<T>(options: Array<T> | {[key: string]: T}): T {
     return options[keys[Math.floor(Math.random() * keys.length)]]
 }
 
-function randomInRange(min: number, max: number): number {
+function randomIntRange(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min) + min)
 }
 
-export { lerp, clearDOM, randomPick, randomInRange }
+function randomFloatRange(min: number, max: number): number {
+    return Math.random() * (max-min) + min
+}
+
+type StoreItem = { id: string, title: string, description: string, price: number, reserved: boolean }
+function createStoreItem(id: string, title: string, description: string, price: number, reserved: boolean): StoreItem {
+    return { id, title, description, price, reserved }
+}
+
+export { lerp, clearDOM, randomPick, randomIntRange, randomFloatRange, StoreItem, createStoreItem }

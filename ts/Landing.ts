@@ -14,17 +14,27 @@ export default class Landing implements Page {
     private _backgroundParallax = 0.1 // amount background should move in proportion to foreground
     private _shouldAnimate = true
     
+    // TODO: find nice color palette
     // store item options
-    private _palette = {
-        yellow: "#FF9000",
-        red: "#B20D30",
-        green: "#00A676",
-        blue: "#044389",
-        // pink: "#FFCBE0"
-    }
-    private _shapes = ["circle", "rectangle"]
-    private _randOffsetRange = 30
-    private _randScaleRange = [1, 1.2]
+    // private _palette = {
+    //     yellow: "#FF9000",
+    //     red: "#B20D30",
+    //     green: "#00A676",
+    //     blue: "#044389",
+    //     // pink: "#FFCBE0"
+    // }
+    // private _palette = {
+    //     1: "#CDB4DB",
+    //     2: "FFC8DD",
+    //     3: "#FFAFCC",
+    //     4: "#BDE0FE",
+    //     5: "#A2D2FF"
+    // }
+    private _palette = ["#72195A", "#6B5CA5", "#71A9F7"]
+    private _shapes = ["circle", "rectangle", "diamond"]
+    private _randOffsetRange = 50
+    private _randScaleRange = [0.95, 1.05]
+    private _diamondTilt = 1
     
     constructor() {
         this._createElements()
@@ -69,20 +79,24 @@ export default class Landing implements Page {
             const item = document.createElement("div")
             item.classList.add("store-item")
             item.dataset["index"] = i.toString()
-            // TODO: give random offset
             item.dataset["shape"] = util.randomPick(this._shapes)
-            const randColor = util.randomPick(this._palette)
-            const randOffsetX = util.randomInRange(-this._randOffsetRange, this._randOffsetRange)
-            const randOffsetY = util.randomInRange(-this._randOffsetRange, this._randOffsetRange)
-            const randScale = util.randomInRange(this._randScaleRange[0], this._randScaleRange[1])
+            if (item.dataset["shape"] === "diamond") {
+                item.style.setProperty("--tilt", this._diamondTilt.toString())
+                this._diamondTilt *= -1
+            }
+            const randColor1 = util.randomPick(this._palette)
+            const randColor2 = util.randomPick(this._palette)
+            const randScale = util.randomFloatRange(this._randScaleRange[0], this._randScaleRange[1])
+            const randOffsetX = util.randomIntRange(-this._randOffsetRange, this._randOffsetRange)
+            const randOffsetY = util.randomIntRange(-this._randOffsetRange, this._randOffsetRange)
             const offsetX = offsetFromCenter[0] * (Math.cos(angularInterval / 180 * Math.PI * i)) + randOffsetX
             const offsetY = offsetFromCenter[1] * (Math.sin(angularInterval / 180 * Math.PI * i)) + randOffsetY
-            const absoluteX = this._page.offsetWidth / 2 + offsetX
-            const absoluteY = this._page.offsetHeight / 2 + offsetY
             item.style.left = `calc(100vw + ${offsetX}px)`
             item.style.top = `calc(100vh + ${offsetY}px)`
-            item.style.borderColor = randColor
-            item.style.animationDelay = `${util.randomInRange(0, 1000)}ms`
+            item.style.scale = randScale.toString()
+            item.style.setProperty("--pseudo-border-color", randColor1)
+            item.style.animationDelay = `${util.randomIntRange(0, 1000)}ms`
+            item.style.borderColor = randColor2
             items.push(item)
         })
 
