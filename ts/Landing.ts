@@ -11,7 +11,7 @@ export default class Landing implements Page {
 
     // parallax settings
     private _translateRange = [-10, -40]
-    private _backgroundParallax = 0.1 // amount background should move in proportion to foreground
+    private _backgroundParallax = 0.15 // amount background should move in proportion to foreground
     private _shouldAnimate = true
     
     // TODO: find nice color palette
@@ -32,6 +32,7 @@ export default class Landing implements Page {
     // }
     private _palette = ["#72195A", "#6B5CA5", "#71A9F7"]
     private _shapes = ["circle", "rectangle", "diamond"]
+    private _baseOffsetRange = [0.42, 0.38] // in proportion to screen size
     private _randOffsetRange = 50
     private _randScaleRange = [0.95, 1.05]
     private _diamondTilt = 1
@@ -72,7 +73,7 @@ export default class Landing implements Page {
     private _createStoreItems(storeData: number[]): HTMLDivElement[] {
         const items: HTMLDivElement[] = []
 
-        const offsetFromCenter = [window.innerWidth * 0.45, window.innerHeight * 0.4]
+        const offsetFromCenter = [window.innerWidth * this._baseOffsetRange[0], window.innerHeight * this._baseOffsetRange[1]]
         const angularInterval = 360 / storeData.length
 
         storeData.forEach((v, i) => {
