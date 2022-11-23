@@ -1,19 +1,25 @@
 
-type Route = (routeArgs?: string[]) => void
+type RouteHandler = (routeOptions: string[]) => void
 
 export default class Router {
 
-    private readonly _routes: {[hash: string]: Route} = {
-
-    }
+    private _routes: {[route: string]: RouteHandler}
 
     constructor() {
-        window.addEventListener("hashchange", this._onHashChange)
+        this._routes = {}
+        window.addEventListener("hashchange", this._onHashChange.bind(this))
+    }
+
+    public define(route: string, callback: RouteHandler) {
+        this._routes[route] = callback
     }
 
     private _onHashChange(event: HashChangeEvent) {
         const newHash = event.newURL.split("#")[1]
-        console.log(newHash)
+        const [route, ...options] = newHash.split("/")
+        // TODO: console log
+        console.log(route, options)
+        if (route in this._routes) this._routes[route](options)
     }
 
 }

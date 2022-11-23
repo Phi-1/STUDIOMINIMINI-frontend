@@ -1,4 +1,4 @@
-import * as util from "./util"
+import * as util from "../util"
 import Page from "./Page"
 
 
@@ -14,23 +14,7 @@ export default class Landing implements Page {
     private _backgroundParallax = 0.15 // amount background should move in proportion to foreground
     private _shouldAnimate = true
     
-    // TODO: find nice color palette
-    // store item options
-    // private _palette = {
-    //     yellow: "#FF9000",
-    //     red: "#B20D30",
-    //     green: "#00A676",
-    //     blue: "#044389",
-    //     // pink: "#FFCBE0"
-    // }
-    // private _palette = {
-    //     1: "#CDB4DB",
-    //     2: "FFC8DD",
-    //     3: "#FFAFCC",
-    //     4: "#BDE0FE",
-    //     5: "#A2D2FF"
-    // }
-    private _palette = ["#72195A", "#6B5CA5", "#71A9F7"]
+    private _palette = ["#A41623", "#29335C", "#F3A712"]
     private _shapes = ["circle", "rectangle", "diamond"]
     private _baseOffsetRange = [0.42, 0.38] // in proportion to screen size
     private _randOffsetRange = 50
@@ -80,6 +64,7 @@ export default class Landing implements Page {
             const item = document.createElement("div")
             item.classList.add("store-item")
             item.dataset["index"] = i.toString()
+            // TODO: make it rarer for too many items to get the same shape
             item.dataset["shape"] = util.randomPick(this._shapes)
             if (item.dataset["shape"] === "diamond") {
                 item.style.setProperty("--tilt", this._diamondTilt.toString())

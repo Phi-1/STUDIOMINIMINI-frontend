@@ -1,5 +1,5 @@
 import Page from "./Page";
-import { StoreItem } from "./util";
+import { StoreItem } from "../util";
 
 
 export default class ItemView implements Page {
