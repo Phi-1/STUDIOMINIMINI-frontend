@@ -13,4 +13,4 @@ function main() {
     landingPage.render()
 }
 
-main()
+// main()

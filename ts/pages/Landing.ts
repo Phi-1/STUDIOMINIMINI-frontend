@@ -14,6 +14,7 @@ export default class Landing implements Page {
     private _backgroundParallax = 0.15 // amount background should move in proportion to foreground
     private _shouldAnimate = true
     
+    // item settings
     private _palette = ["#A41623", "#29335C", "#F3A712"]
     private _shapes = ["circle", "rectangle", "diamond"]
     private _baseOffsetRange = [0.42, 0.38] // in proportion to screen size

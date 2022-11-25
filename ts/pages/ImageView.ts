@@ -1,0 +1,1 @@
+// TODO: this page can just be used from anywhere to view an image

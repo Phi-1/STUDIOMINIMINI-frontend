@@ -29,4 +29,6 @@ function createStoreItem(id: string, title: string, description: string, price: 
     return { id, title, description, price, reserved }
 }
 
+//TODO: final color palette
+
 export { lerp, clearDOM, randomPick, randomIntRange, randomFloatRange, StoreItem, createStoreItem }
