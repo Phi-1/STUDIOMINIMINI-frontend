@@ -9,6 +9,7 @@
     --c-bg: #090909;
     --c-1: #ffc0cb;
     --c-2: #54428E;
+    --c-3: #FCDE9C;
     --bg-pattern: radial-gradient(
         rgba(255, 255, 255, 0.8) 1%,
         transparent 1%
@@ -189,12 +190,29 @@ html {
 }
 
 .btn-reserve-item {
+    position: relative;
     display: inline-block;
     padding: 1rem 2rem;
     background-color: var(--c-2);
     font-size: 1.4rem;
     letter-spacing: 2px;
     cursor: pointer;
+    transition: color 800ms ease-in-out;
+}
+
+.btn-reserve-item::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    border: 2px solid var(--c-3);
+    transition: opacity 800ms ease-in-out;
+}
+.btn-reserve-item:hover {
+    color: var(--c-3);
+}
+.btn-reserve-item:hover::before {
+    opacity: 1;
 }
 
 /* changes from halfway scroll design:
