@@ -30,5 +30,6 @@ function createStoreItem(id: string, title: string, description: string, price: 
 }
 
 //TODO: final color palette
+//TODO: window resize event listener with mobile/pc boolean
 
 export { lerp, clearDOM, randomPick, randomIntRange, randomFloatRange, StoreItem, createStoreItem }

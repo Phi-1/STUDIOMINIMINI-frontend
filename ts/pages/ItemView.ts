@@ -8,8 +8,11 @@ export default class ItemView implements Page {
     private _page: HTMLDivElement
     private _itemInfo: HTMLDivElement
     private _gallery: HTMLDivElement
+    private _galleryItems: HTMLDivElement[] = []
     // store data
     private _itemData: util.StoreItem
+    // settings
+    private _pageParallax = 0.1
 
     constructor(itemData: util.StoreItem) {
         this._itemData = itemData
@@ -48,6 +51,7 @@ export default class ItemView implements Page {
         price.classList.add("item-price")
         const reserveButton = document.createElement("div")
         reserveButton.classList.add("btn-reserve-item")
+        reserveButton.innerText = "Reserve"
 
         root.appendChild(title)
         root.appendChild(description)
@@ -57,9 +61,24 @@ export default class ItemView implements Page {
         return root
     }
 
+    private _onGalleryScroll() {
+        // TODO: background parallax on gallery scroll
+        const scrollMax = this._gallery.scrollHeight - this._gallery.getBoundingClientRect().height
+        // get scroll y, normalize as function of total height (prob sum of image heights since height is set)
+        // set background position interpolated between base (50%) and some parallax constant
+    }
+
     private _createGalleryElement(): HTMLDivElement {
         const gallery = document.createElement("div")
         gallery.classList.add("scrolling-gallery")
+        gallery.addEventListener("scroll", this._onGalleryScroll.bind(this))
+        // TODO: set image item width dynamically based on image aspect ratio and predetermined max width/height
+        for (let i = 0; i < 8; i++) {
+            const image = document.createElement("div")
+            image.classList.add("item-image")
+            this._galleryItems.push(image)
+            gallery.appendChild(image)
+        }
         return gallery
     }
 
