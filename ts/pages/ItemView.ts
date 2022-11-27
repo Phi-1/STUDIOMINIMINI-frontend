@@ -1,5 +1,5 @@
-import Page from "./Page";
-import * as util from "../util";
+import Page from "./Page"
+import * as util from "../util"
 
 
 export default class ItemView implements Page {
@@ -11,8 +11,9 @@ export default class ItemView implements Page {
     private _galleryItems: HTMLDivElement[] = []
     // store data
     private _itemData: util.StoreItem
-    // settings
-    private _pageParallax = 0.1
+    // parallax
+    private _shouldAnimate = true
+    private _pageParallax = 1.4
 
     constructor(itemData: util.StoreItem) {
         this._itemData = itemData
@@ -45,10 +46,16 @@ export default class ItemView implements Page {
 
         const title = document.createElement("h1")
         title.classList.add("item-title")
+        title.innerText = this._itemData.title
+
         const description = document.createElement("p")
         description.classList.add("item-description")
+        description.innerText = this._itemData.description
+        // TODO: format price with currency sign and decimal point
         const price = document.createElement("span")
         price.classList.add("item-price")
+        price.innerText = this._itemData.price.toString()
+
         const reserveButton = document.createElement("div")
         reserveButton.classList.add("btn-reserve-item")
         reserveButton.innerText = "Reserve"
@@ -62,10 +69,19 @@ export default class ItemView implements Page {
     }
 
     private _onGalleryScroll() {
-        // TODO: background parallax on gallery scroll
+        if (!this._shouldAnimate) return
         const scrollMax = this._gallery.scrollHeight - this._gallery.getBoundingClientRect().height
-        // get scroll y, normalize as function of total height (prob sum of image heights since height is set)
-        // set background position interpolated between base (50%) and some parallax constant
+        const nScroll = this._gallery.scrollTop / scrollMax
+        const bgPos = util.lerp(0, -50, nScroll) * this._pageParallax
+        this._page.animate({
+            backgroundPositionY: `${bgPos}%`
+        }, {
+            duration: 400,
+            easing: "ease-out",
+            fill: "forwards"
+        })
+        this._shouldAnimate = false
+        setTimeout(() => this._shouldAnimate = true, 20)
     }
 
     private _createGalleryElement(): HTMLDivElement {
