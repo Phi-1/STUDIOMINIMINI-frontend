@@ -149,6 +149,8 @@ html {
 }
 
 .item-page {
+    overflow-x: hidden;
+    overflow-y: scroll;
     width: 100vw;
     height: 100vh;
     background-color: var(--c-bg);
@@ -215,29 +217,26 @@ html {
     opacity: 1;
 }
 
-/* changes from halfway scroll design:
-gallery width was 70%
-no display grid
-3rem padding was 3rem margin on items
-item width was not set */
+/* TODO: padding does not show up at the bottom */
 .scrolling-gallery {
-    width: 100%;
+    width: 70%;
     height: 100%;
     display: grid;
     grid-template-columns: 1fr;
-    place-items: start;
+    place-items: center;
     gap: 3rem;
     padding: 3rem;
-    overflow-y: scroll;
     scroll-behavior: smooth;
 }
 
 .item-image {
-    background-image: url("https://unsplash.it/1920/1080");
-    background-size: contain;
-    background-position: center center;
-    background-repeat: no-repeat;
-    width: 70%;
-    height: 55vmin;
+    /* width and height are set in javascript */
+    border-radius: 2px;
+    box-shadow: 0 0 16px 2px rgba(0, 0, 0, 0.8);
+    transition: scale 300ms ease-out;
     cursor: pointer;
+}
+
+.item-image:hover {
+    scale: 1.01;
 }

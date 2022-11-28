@@ -8,10 +8,11 @@ export default class ItemView implements Page {
     private _page: HTMLDivElement
     private _itemInfo: HTMLDivElement
     private _gallery: HTMLDivElement
-    private _galleryItems: HTMLDivElement[] = []
+    private _galleryItems: HTMLImageElement[] = []
     // store data
     private _itemData: util.StoreItem
-    // parallax
+    // settings
+    private _imageHeight = 55 //vmin
     private _shouldAnimate = true
     private _pageParallax = 1.4
 
@@ -34,9 +35,26 @@ export default class ItemView implements Page {
         this._page.appendChild(this._gallery)
     }
 
+    private _onGalleryScroll() {
+        if (!this._shouldAnimate) return
+        const scrollMax = this._page.scrollHeight - this._page.getBoundingClientRect().height
+        const nScroll = this._page.scrollTop / scrollMax
+        const bgPos = util.lerp(0, -50, nScroll) * this._pageParallax
+        this._page.animate({
+            backgroundPositionY: `${bgPos}%`
+        }, {
+            duration: 400,
+            easing: "ease-out",
+            fill: "forwards"
+        })
+        this._shouldAnimate = false
+        setTimeout(() => this._shouldAnimate = true, 20)
+    }
+
     private _createPageElement(): HTMLDivElement {
         const page = document.createElement("div")
         page.classList.add("item-page")
+        page.addEventListener("scroll", this._onGalleryScroll.bind(this))
         return page
     }
 
@@ -68,30 +86,17 @@ export default class ItemView implements Page {
         return root
     }
 
-    private _onGalleryScroll() {
-        if (!this._shouldAnimate) return
-        const scrollMax = this._gallery.scrollHeight - this._gallery.getBoundingClientRect().height
-        const nScroll = this._gallery.scrollTop / scrollMax
-        const bgPos = util.lerp(0, -50, nScroll) * this._pageParallax
-        this._page.animate({
-            backgroundPositionY: `${bgPos}%`
-        }, {
-            duration: 400,
-            easing: "ease-out",
-            fill: "forwards"
-        })
-        this._shouldAnimate = false
-        setTimeout(() => this._shouldAnimate = true, 20)
-    }
-
     private _createGalleryElement(): HTMLDivElement {
         const gallery = document.createElement("div")
         gallery.classList.add("scrolling-gallery")
-        gallery.addEventListener("scroll", this._onGalleryScroll.bind(this))
-        // TODO: set image item width dynamically based on image aspect ratio and predetermined max width/height
+        // TODO: set image item width dynamically based on image aspect ratio
         for (let i = 0; i < 8; i++) {
-            const image = document.createElement("div")
+            const image = new Image()
+            image.src = "https://unsplash.it/1920/1080"
+            const proportionalWidth = image.naturalWidth / image.naturalHeight
             image.classList.add("item-image")
+            image.style.height = `${this._imageHeight}vmin`
+            image.style.width = `${this._imageHeight * proportionalWidth}vmin`
             this._galleryItems.push(image)
             gallery.appendChild(image)
         }
