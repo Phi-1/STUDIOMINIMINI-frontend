@@ -29,7 +29,38 @@ function createStoreItem(id: string, title: string, description: string, price: 
     return { id, title, description, price, reserved }
 }
 
-//TODO: final color palette
-//TODO: window resize event listener with mobile/pc boolean
+const palette = {
+    grey: "#090909",
+    pink: "#ffc0cb",
+    purple: "#54428E",
+    gold: "#FCDE9C"
+}
 
-export { lerp, clearDOM, randomPick, randomIntRange, randomFloatRange, StoreItem, createStoreItem }
+type DeviceType = "Small" | "Large"
+type DeviceListener = (deviceType?: DeviceType) => any
+const device = (() => {
+    
+
+    const widthBreakpoint = 1100
+    let deviceType: DeviceType = window.innerWidth > widthBreakpoint ? "Large" : "Small"
+    const deviceListeners: DeviceListener[] = []
+
+    window.addEventListener("resize", () => {
+        const currentDeviceType: DeviceType = window.innerWidth > widthBreakpoint ? "Large" : "Small"
+        if (currentDeviceType !== deviceType) {
+            deviceType = currentDeviceType
+            deviceListeners.forEach((callback) => callback(deviceType))
+        }
+    })
+
+    return {
+        getType: (): DeviceType => {
+            return deviceType
+        },
+        addDeviceListener: (callback: DeviceListener) => {
+            deviceListeners.push(callback)
+        }
+    }
+})()
+
+export { lerp, clearDOM, randomPick, randomIntRange, randomFloatRange, StoreItem, createStoreItem, palette, device, DeviceType }

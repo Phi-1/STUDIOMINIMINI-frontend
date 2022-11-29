@@ -69,6 +69,7 @@ export default class ItemView implements Page {
         const description = document.createElement("p")
         description.classList.add("item-description")
         description.innerText = this._itemData.description
+
         // TODO: format price with currency sign and decimal point
         const price = document.createElement("span")
         price.classList.add("item-price")
@@ -78,10 +79,14 @@ export default class ItemView implements Page {
         reserveButton.classList.add("btn-reserve-item")
         reserveButton.innerText = "Reserve"
 
+        const priceButtonContainer = document.createElement("div")
+        priceButtonContainer.classList.add("price-button-container")
+        priceButtonContainer.appendChild(price)
+        priceButtonContainer.appendChild(reserveButton)
+
         root.appendChild(title)
         root.appendChild(description)
-        root.appendChild(price)
-        root.appendChild(reserveButton)
+        root.appendChild(priceButtonContainer)
 
         return root
     }

@@ -5,9 +5,11 @@ import Page from "./Page"
 export default class Landing implements Page {
 
     // elements
+    // TODO: separate desktop and mobile layouts
     private _page: HTMLDivElement
     private _title: HTMLHeadingElement
     private _storeItems: HTMLDivElement[]
+    private _navContainer: HTMLElement
 
     // parallax settings
     private _translateRange = [-10, -40]
@@ -15,16 +17,18 @@ export default class Landing implements Page {
     private _shouldAnimate = true
     
     // item settings
-    private _palette = ["#A41623", "#29335C", "#F3A712"]
     private _shapes = ["circle", "rectangle", "diamond"]
     private _baseOffsetRange = [0.42, 0.38] // in proportion to screen size
     private _randOffsetRange = 50
     private _randScaleRange = [0.95, 1.05]
     private _diamondTilt = 1
     
-    constructor() {
-        this._createElements()
-        this._setPageParallax()
+    constructor(deviceType: util.DeviceType) {
+        this._createElements(deviceType)
+        util.device.addDeviceListener(((deviceType: util.DeviceType) => {
+            this._createElements(deviceType)
+            this.render()
+        }).bind(this))
     }
 
     public render() {
@@ -32,66 +36,29 @@ export default class Landing implements Page {
         document.body.appendChild(this._page)
     }
 
-    private _createElements() {
-        this._page = this._createPageElement()
-        this._title = this._createTitleElement()
-        this._storeItems = this._createStoreItems([0, 1, 2, 3, 4, 5, 6])
+    private _createElements(deviceType: util.DeviceType) {
+
+        this._page = this._createPageElement(deviceType)
+        this._title = this._createTitleElement(deviceType)
+        this._storeItems = this._createStoreItems(deviceType, [0, 1, 2, 3, 4, 5, 6])
+        if (deviceType === "Small") this._navContainer = this._createNavElement()
+        else this._navContainer = null
+
         // element tree
         this._page.appendChild(this._title)
         this._storeItems.forEach((item) => this._page.appendChild(item))
+        if (this._navContainer) this._page.appendChild(this._navContainer)
     }
 
-    private _createPageElement(): HTMLDivElement {
+    private _createPageElement(deviceType: util.DeviceType): HTMLDivElement {
         const page = document.createElement("div")
-        page.classList.add("page")
+        page.classList.add("landing-page")
+        if (deviceType === "Large") this._setPageParallax(page)
         return page
     }
 
-    private _createTitleElement(): HTMLDivElement {
-        const title = document.createElement("h1")
-        title.classList.add("page-title")
-        title.innerText = "STUDIOMINIMINI"
-        return title
-    }
-
-    // TODO: reposition items on window resize
-    private _createStoreItems(storeData: number[]): HTMLDivElement[] {
-        const items: HTMLDivElement[] = []
-
-        const offsetFromCenter = [window.innerWidth * this._baseOffsetRange[0], window.innerHeight * this._baseOffsetRange[1]]
-        const angularInterval = 360 / storeData.length
-
-        storeData.forEach((v, i) => {
-            const item = document.createElement("div")
-            item.classList.add("store-item")
-            item.dataset["index"] = i.toString()
-            // TODO: make it rarer for too many items to get the same shape
-            item.dataset["shape"] = util.randomPick(this._shapes)
-            if (item.dataset["shape"] === "diamond") {
-                item.style.setProperty("--tilt", this._diamondTilt.toString())
-                this._diamondTilt *= -1
-            }
-            const randColor1 = util.randomPick(this._palette)
-            const randColor2 = util.randomPick(this._palette)
-            const randScale = util.randomFloatRange(this._randScaleRange[0], this._randScaleRange[1])
-            const randOffsetX = util.randomIntRange(-this._randOffsetRange, this._randOffsetRange)
-            const randOffsetY = util.randomIntRange(-this._randOffsetRange, this._randOffsetRange)
-            const offsetX = offsetFromCenter[0] * (Math.cos(angularInterval / 180 * Math.PI * i)) + randOffsetX
-            const offsetY = offsetFromCenter[1] * (Math.sin(angularInterval / 180 * Math.PI * i)) + randOffsetY
-            item.style.left = `calc(100vw + ${offsetX}px)`
-            item.style.top = `calc(100vh + ${offsetY}px)`
-            item.style.scale = randScale.toString()
-            item.style.setProperty("--pseudo-border-color", randColor1)
-            item.style.animationDelay = `${util.randomIntRange(0, 1000)}ms`
-            item.style.borderColor = randColor2
-            items.push(item)
-        })
-
-        return items
-    }
-
-    private _setPageParallax() {
-        this._page.addEventListener("mousemove", (event: MouseEvent) => {
+    private _setPageParallax(page: HTMLDivElement) {
+        page.addEventListener("mousemove", ((event: MouseEvent) => {
             if (!this._shouldAnimate) return
             // normalized mouse coordinates
             const [nX, nY] = [event.clientX / window.innerWidth, event.clientY / window.innerHeight]
@@ -106,7 +73,74 @@ export default class Landing implements Page {
             })
             this._shouldAnimate = false
             setTimeout(() => this._shouldAnimate = true, 20)
+        }).bind(this))
+    }
+
+    private _createTitleElement(deviceType: util.DeviceType): HTMLDivElement {
+        const title = document.createElement("h1")
+        title.classList.add("page-title")
+        title.innerText = "STUDIOMINIMINI"
+        return title
+    }
+
+    // TODO: reposition items on window resize
+    private _createStoreItems(deviceType: util.DeviceType, storeData: number[]): HTMLDivElement[] {
+        const items: HTMLDivElement[] = []
+
+        const offsetFromCenter = [window.innerWidth * this._baseOffsetRange[0], window.innerHeight * this._baseOffsetRange[1]]
+        const angularInterval = 360 / storeData.length
+
+        storeData.forEach((v, i) => {
+            const item = document.createElement("div")
+            item.classList.add("store-item")
+
+            // TODO: make it rarer for too many items to get the same shape
+            item.dataset["shape"] = util.randomPick(this._shapes)
+            if (item.dataset["shape"] === "diamond") {
+                item.style.setProperty("--tilt", this._diamondTilt.toString())
+                this._diamondTilt *= -1
+            }
+
+            const randColor1 = util.randomPick(util.palette)
+            item.style.borderColor = randColor1
+            
+            if (deviceType === "Large") {
+                const randScale = util.randomFloatRange(this._randScaleRange[0], this._randScaleRange[1])
+                const randOffsetX = util.randomIntRange(-this._randOffsetRange, this._randOffsetRange)
+                const randOffsetY = util.randomIntRange(-this._randOffsetRange, this._randOffsetRange)
+                const offsetX = offsetFromCenter[0] * (Math.cos(angularInterval / 180 * Math.PI * i)) + randOffsetX
+                const offsetY = offsetFromCenter[1] * (Math.sin(angularInterval / 180 * Math.PI * i)) + randOffsetY
+                item.style.left = `calc(100vw + ${offsetX}px)`
+                item.style.top = `calc(100vh + ${offsetY}px)`
+                item.style.scale = randScale.toString()
+            }
+
+            item.style.animationDelay = `${util.randomIntRange(0, 1000)}ms`
+            
+            items.push(item)
         })
+
+        return items
+    }
+
+    private _createNavElement(): HTMLElement {
+        const navContainer = document.createElement("nav")
+        navContainer.classList.add("landing-nav-container")
+
+        const navButtonUp = document.createElement("div")
+        navButtonUp.classList.add("landing-nav-btn-up")
+        const iconUp = document.createElement("i")
+        // TODO: fa icons
+
+        const navButtonDown = document.createElement("div")
+        navButtonDown.classList.add("landing-nav-btn-down")
+        const iconDown = document.createElement("i")
+        // TODO: fa icons
+
+        navContainer.appendChild(navButtonUp)
+        navContainer.appendChild(navButtonDown)
+
+        return navContainer
     }
 
 }

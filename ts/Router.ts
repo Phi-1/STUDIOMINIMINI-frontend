@@ -17,8 +17,6 @@ export default class Router {
     private _onHashChange(event: HashChangeEvent) {
         const newHash = event.newURL.split("#")[1]
         const [route, ...options] = newHash.split("/")
-        // TODO: console log
-        console.log(route, options)
         if (route in this._routes) this._routes[route](options)
     }
 

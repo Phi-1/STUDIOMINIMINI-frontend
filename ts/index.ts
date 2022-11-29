@@ -10,12 +10,10 @@ const storeItem = util.createStoreItem(
 )
 
 function main() {
-    // const landingPage = new Landing()
-    // const router = new Router()
-    // router.define("", () => landingPage.render())
-    // landingPage.render()
-    const itemView = new ItemView(storeItem)
-    itemView.render()
+    const deviceType = util.device.getType()
+    const router = new Router()
+    router.define("", () => new Landing(deviceType).render())
+    new Landing(deviceType).render()
 }
 
 main()
