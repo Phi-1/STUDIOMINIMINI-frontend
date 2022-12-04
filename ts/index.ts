@@ -14,6 +14,7 @@ function main() {
     const router = new Router()
     router.define("", () => new Landing(deviceType).render())
     new Landing(deviceType).render()
+    // new ItemView(storeItem).render()
 }
 
 main()

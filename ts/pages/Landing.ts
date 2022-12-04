@@ -8,6 +8,7 @@ export default class Landing implements Page {
     // TODO: separate desktop and mobile layouts
     private _page: HTMLDivElement
     private _title: HTMLHeadingElement
+    private _itemContainer: HTMLDivElement
     private _storeItems: HTMLDivElement[]
     private _navContainer: HTMLElement
 
@@ -37,26 +38,35 @@ export default class Landing implements Page {
     }
 
     private _createElements(deviceType: util.DeviceType) {
+        if (deviceType === "Small") this._createLayoutSmall()
+        else this._createLayoutLarge()
+    }
 
-        this._page = this._createPageElement(deviceType)
-        this._title = this._createTitleElement(deviceType)
-        this._storeItems = this._createStoreItems(deviceType, [0, 1, 2, 3, 4, 5, 6])
-        if (deviceType === "Small") this._navContainer = this._createNavElement()
-        else this._navContainer = null
+    private _createLayoutSmall() {
+        this._page = this._createPageElement("Small")
+        this._title = this._createTitleElement("Small")
+        this._itemContainer = this._createItemContainerElement()
+        this._storeItems = this._createStoreItems("Small", [0, 1, 2, 3, 4, 5, 6])
+        this._navContainer = this._createNavElement()
+
+        // element tree
+        this._storeItems.forEach((item) => this._itemContainer.appendChild(item))
+
+        this._page.appendChild(this._title)
+        this._page.appendChild(this._itemContainer)
+        this._page.appendChild(this._navContainer)
+    }
+
+    private _createLayoutLarge() {
+        this._page = this._createPageElement("Large")
+        this._title = this._createTitleElement("Large")
+        this._storeItems = this._createStoreItems("Large", [0, 1, 2, 3, 4, 5, 6])
 
         // element tree
         this._page.appendChild(this._title)
         this._storeItems.forEach((item) => this._page.appendChild(item))
-        if (this._navContainer) this._page.appendChild(this._navContainer)
     }
-
-    private _createPageElement(deviceType: util.DeviceType): HTMLDivElement {
-        const page = document.createElement("div")
-        page.classList.add("landing-page")
-        if (deviceType === "Large") this._setPageParallax(page)
-        return page
-    }
-
+    
     private _setPageParallax(page: HTMLDivElement) {
         page.addEventListener("mousemove", ((event: MouseEvent) => {
             if (!this._shouldAnimate) return
@@ -75,12 +85,25 @@ export default class Landing implements Page {
             setTimeout(() => this._shouldAnimate = true, 20)
         }).bind(this))
     }
+    
+    private _createPageElement(deviceType: util.DeviceType): HTMLDivElement {
+        const page = document.createElement("div")
+        page.classList.add("landing-page")
+        if (deviceType === "Large") this._setPageParallax(page)
+        return page
+    }
 
     private _createTitleElement(deviceType: util.DeviceType): HTMLDivElement {
         const title = document.createElement("h1")
         title.classList.add("page-title")
         title.innerText = "STUDIOMINIMINI"
         return title
+    }
+
+    private _createItemContainerElement(): HTMLDivElement {
+        const container = document.createElement("div")
+        container.classList.add("store-item-container")
+        return container
     }
 
     // TODO: reposition items on window resize
