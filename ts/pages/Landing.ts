@@ -5,7 +5,6 @@ import Page from "./Page"
 export default class Landing implements Page {
 
     // elements
-    // TODO: separate desktop and mobile layouts
     private _page: HTMLDivElement
     private _title: HTMLHeadingElement
     private _itemContainer: HTMLDivElement
@@ -20,7 +19,7 @@ export default class Landing implements Page {
     // item settings
     private _shapes = ["circle", "rectangle", "diamond"]
     private _baseOffsetRange = [0.42, 0.38] // in proportion to screen size
-    private _randOffsetRange = 50
+    private _randOffsetRange = 50           // in  pixels
     private _randScaleRange = [0.95, 1.05]
     private _diamondTilt = 1
     
@@ -61,35 +60,41 @@ export default class Landing implements Page {
         this._page = this._createPageElement("Large")
         this._title = this._createTitleElement("Large")
         this._storeItems = this._createStoreItems("Large", [0, 1, 2, 3, 4, 5, 6])
-
+        
         // element tree
         this._page.appendChild(this._title)
         this._storeItems.forEach((item) => this._page.appendChild(item))
+
+        // reset items on window resize
+        // TODO: delay reset with each resize, so that reordering only happens after final resize event
+        window.addEventListener("resize", (() => {
+            this._storeItems.forEach((item) => this._page.removeChild(item))
+            this._storeItems = this._createStoreItems("Large", [0, 1, 2, 3, 4, 5, 6])
+            this._storeItems.forEach((item) => this._page.appendChild(item))
+        }).bind(this))
     }
     
-    private _setPageParallax(page: HTMLDivElement) {
-        page.addEventListener("mousemove", ((event: MouseEvent) => {
-            if (!this._shouldAnimate) return
-            // normalized mouse coordinates
-            const [nX, nY] = [event.clientX / window.innerWidth, event.clientY / window.innerHeight]
-            const [tX, tY] = [util.lerp(this._translateRange[0], this._translateRange[1], nX), util.lerp(this._translateRange[0], this._translateRange[1], nY)]
-            this._page.animate({
-                transform: `translate(${tX}%, ${tY}%)`,
-                backgroundPosition: `${tX*this._backgroundParallax}% ${tY*this._backgroundParallax}%`
-            }, {
-                duration: 1000,
-                easing: "ease-out",
-                fill: "forwards"
-            })
-            this._shouldAnimate = false
-            setTimeout(() => this._shouldAnimate = true, 20)
-        }).bind(this))
+    private _setPageParallax(event: MouseEvent) {
+        if (!this._shouldAnimate) return
+        // normalized mouse coordinates
+        const [nX, nY] = [event.clientX / window.innerWidth, event.clientY / window.innerHeight]
+        const [tX, tY] = [util.lerp(this._translateRange[0], this._translateRange[1], nX), util.lerp(this._translateRange[0], this._translateRange[1], nY)]
+        this._page.animate({
+            transform: `translate(${tX}%, ${tY}%)`,
+            backgroundPosition: `${tX*this._backgroundParallax}% ${tY*this._backgroundParallax}%`
+        }, {
+            duration: 1000,
+            easing: "ease-out",
+            fill: "forwards"
+        })
+        this._shouldAnimate = false
+        setTimeout(() => this._shouldAnimate = true, 20)
     }
     
     private _createPageElement(deviceType: util.DeviceType): HTMLDivElement {
         const page = document.createElement("div")
         page.classList.add("landing-page")
-        if (deviceType === "Large") this._setPageParallax(page)
+        if (deviceType === "Large") page.addEventListener("mousemove", this._setPageParallax.bind(this))
         return page
     }
 
@@ -100,13 +105,19 @@ export default class Landing implements Page {
         return title
     }
 
+    private _onItemScroll() {
+        this._storeItems.forEach((item) => {
+            console.log(item.scrollTop)
+        })
+    }
+
     private _createItemContainerElement(): HTMLDivElement {
         const container = document.createElement("div")
         container.classList.add("store-item-container")
+        container.addEventListener("scroll", this._onItemScroll.bind(this))
         return container
     }
 
-    // TODO: reposition items on window resize
     private _createStoreItems(deviceType: util.DeviceType, storeData: number[]): HTMLDivElement[] {
         const items: HTMLDivElement[] = []
 
@@ -117,7 +128,6 @@ export default class Landing implements Page {
             const item = document.createElement("div")
             item.classList.add("store-item")
 
-            // TODO: make it rarer for too many items to get the same shape
             item.dataset["shape"] = util.randomPick(this._shapes)
             if (item.dataset["shape"] === "diamond") {
                 item.style.setProperty("--tilt", this._diamondTilt.toString())

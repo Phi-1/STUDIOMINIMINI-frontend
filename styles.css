@@ -142,7 +142,7 @@ html {
         display: grid;
         grid-template-columns: 1fr;
         place-items: center;
-        gap: 3rem;
+        /* gap: 3rem; */
         scroll-behavior: smooth;
     }
 
@@ -150,6 +150,7 @@ html {
         z-index: -1;
         width: 80%;
         height: calc(100vh - var(--title-height) - var(--nav-height));
+        margin: 3rem 0;
         background-color: rgba(255, 255, 255, 0.4);
     }
 

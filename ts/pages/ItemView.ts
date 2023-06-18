@@ -94,7 +94,6 @@ export default class ItemView implements Page {
     private _createGalleryElement(): HTMLDivElement {
         const gallery = document.createElement("div")
         gallery.classList.add("scrolling-gallery")
-        // TODO: set image item width dynamically based on image aspect ratio
         for (let i = 0; i < 8; i++) {
             const image = new Image()
             image.src = "https://unsplash.it/1920/1080"
